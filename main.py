@@ -1,10 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 
-#page_to_parse = requests.get("https://www.radiokawa.com/jeux-video/faster-than-light/")
 page_to_parse = requests.get("https://www.radiokawa.com/episode/late-late-boudoir-gambetta/")
-# page_to_parse = requests.get("https://www.radiokawa.com/culture-et-arts/comics-outcast/")
-# page_to_parse = requests.get("https://www.radiokawa.com/musique/morceaux-choisis/")
+
+'''
+Les podcasts à dl :
+e-dixit : https://www.radiokawa.com/episode/e-dixit-1/
+Comics outcast : https://www.radiokawa.com/culture-et-arts/comics-outcast/
+Morceaux choisis : https://www.radiokawa.com/musique/morceaux-choisis/
+Faster Than Light : https://www.radiokawa.com/jeux-video/faster-than-light/
+Les démons du Midi : https://www.radiokawa.com/jeux-video/les-demons-du-midi/
+'''
+
+# TODO : Vérifier que la sortie pour les différents podcasts. Faire une branche par podcast ?
+
 parsed_page = BeautifulSoup(page_to_parse.text, features="html.parser")
 
 # print(parsed_page)

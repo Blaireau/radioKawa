@@ -35,7 +35,7 @@ for i in range(len(episode_link)):
     episode_date = parsed_page.find("div", {"class": "episode-date"}).contents
     episode_desc = parsed_page.find("div", {"class": "episode-content text-copy"}).contents
     episode_thumbnail = str(parsed_page.find("div", {"class": "episode-thumbnail"})['style']).split('(')[1][:-2]
-    #print("Titre : "+str(episode_title[0])+"\nSous-titre : "+str(episode_subtitle[0])+"\nDate : "+str(episode_date)+"\nDescription : "+str(episode_desc)+"\n\n")
+    print("Titre : "+str(episode_title[0])+"\nSous-titre : "+str(episode_subtitle[0])+"\nDate : "+str(episode_date)+"\nDescription : "+str(episode_desc)+"\n\n")
     print(episode_thumbnail)
 
 

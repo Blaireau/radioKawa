@@ -58,10 +58,13 @@ for i in range(len(episode_link)):
     episode_thumbnail = str(parsed_page.find("div", {"class": "episode-thumbnail"})['style']).split('(')[1][:-2]
     print("Titre : " + str(episode_title[0]) + "\nSous-titre : " + str(episode_subtitle[0]) + "\nDate : " + str(
         episode_date) + "\nDescription : " + str(episode_desc))
-    print(episode_thumbnail + "\n\n")
+    print(episode_thumbnail)
     print("Téléchargement de l'épisode en cours...")
     #download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]))
     print("Téléchargement fini. Episode suivant !")
+    print("Mise à jour du fichier doc")
+    #document_generation(...,...)
+    print("Mise à jour finie\n")
 
 '''
 episode_to_get = mp3_link_list[1]['href']

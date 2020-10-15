@@ -20,6 +20,7 @@ from odf.style import Style, ParagraphProperties, TextProperties
 from odf.text import P
 from odf import teletype
 import os
+import re
 
 
 # Download an episode within the correct path.
@@ -49,6 +50,9 @@ def get_image(url):
     image = requests.get(url)
     return image.content
 
+def clean_date(date_to_clean):
+    #date_cleaned = re.sub(remove_html, '', str(date_to_clean[1]))
+    return date_to_clean[0]+re.sub(remove_html, '', str(date_to_clean[1]))
 
 # Generate the document
 def document_generation(output_doc, episode_title, episode_subtitle, episode_date, episode_desc, episode_voices,
@@ -63,6 +67,15 @@ def document_generation(output_doc, episode_title, episode_subtitle, episode_dat
     p_element = P(stylename=subtitleStyle)
     teletype.addTextToElement(p_element, episode_subtitle)
     output_doc.text.addElement(p_element, episode_subtitle)
+    p_element = P(stylename=dateStyle)
+    teletype.addTextToElement(p_element, line_break)
+    output_doc.text.addElement(p_element, line_break)
+    teletype.addTextToElement(p_element, episode_date)
+    output_doc.text.addElement(p_element, episode_date)
+    # teletype.addTextToElement(p_element, episode_desc)
+    # output_doc.text.addElement(p_element, episode_desc)
+    # teletype.addTextToElement(p_element, episode_voices)
+    # output_doc.text.addElement(p_element, episode_voices)
     # Add the thumbnail
     p = P()
     output_doc.text.addElement(p)
@@ -70,12 +83,6 @@ def document_generation(output_doc, episode_title, episode_subtitle, episode_dat
     my_picture = output_doc.addPictureFromString(get_image(episode_thumbnail), mediatype="jpeg")
     photoframe.addElement(Image(href=my_picture))
     p.addElement(photoframe)
-    # teletype.addTextToElement(p_element, episode_date)
-    # output_doc.text.addElement(p_element, episode_date)
-    # teletype.addTextToElement(p_element, episode_desc)
-    # output_doc.text.addElement(p_element, episode_desc)
-    # teletype.addTextToElement(p_element, episode_voices)
-    # output_doc.text.addElement(p_element, episode_voices)
     # Page Break
     p_element = P(stylename=p_with_break)
     output_doc.text.addElement(p_element)
@@ -85,7 +92,7 @@ def document_generation(output_doc, episode_title, episode_subtitle, episode_dat
 # Title
 titleStyle = Style(name="title", family="paragraph")
 titleStyle.addElement(ParagraphProperties(attributes={"textalign": "center"}))
-titleStyle.addElement(TextProperties(attributes={"fontsize": "12pt"}))
+titleStyle.addElement(TextProperties(attributes={"fontsize": "14pt"}))
 # Subtitle
 subtitleStyle = Style(name="subtitle", family="paragraph")
 subtitleStyle.addElement(ParagraphProperties(attributes={"textalign": "center"}))
@@ -93,11 +100,18 @@ subtitleStyle.addElement(TextProperties(attributes={"fontsize": "24pt"}))
 # Paragraph
 pStyle = Style(name="paragraph", family="paragraph")
 pStyle.addElement(ParagraphProperties(attributes={"textalign": "justify"}))
+# Date
+dateStyle = Style(name="date", family="paragraph")
+dateStyle.addElement(ParagraphProperties(attributes={"textalign": "left"}))
+dateStyle.addElement(TextProperties(attributes={"fontsize": "10pt"}))
 # Paragraph with break_pages
 p_with_break = Style(name="WithBreak", parentstylename="Standard", family="paragraph")
 p_with_break.addElement(ParagraphProperties(breakbefore="page"))
 # Line break
 line_break = '\n'
+
+# Compiling RE to clean the HTML in string
+remove_html = re.compile('<.*?>')
 
 # Get the podcast page.
 page_to_parse = requests.get("https://www.radiokawa.com/episode/late-late-boudoir-gambetta/")
@@ -128,6 +142,7 @@ my_styles.addElement(pStyle)
 my_styles.addElement(subtitleStyle)
 my_styles.addElement(titleStyle)
 my_styles.addElement(p_with_break)
+my_styles.addElement(dateStyle)
 
 for i in range(len(episode_link)):
     page_to_parse = requests.get(episode_link[i]['href'])
@@ -136,19 +151,20 @@ for i in range(len(episode_link)):
     episode_title = parsed_page.find("h1", {"class": "episode-title"}).contents
     episode_subtitle = parsed_page.find("div", {"class": "episode-subtitle"}).contents
     episode_date = parsed_page.find("div", {"class": "episode-date"}).contents
+    episode_date = clean_date(episode_date)
     episode_desc = parsed_page.find("div", {"class": "episode-content text-copy"}).contents
     episode_voices = parsed_page.find("div", {"class": "episode-voices"}).contents
     episode_thumbnail = str(parsed_page.find("div", {"class": "episode-thumbnail"})['style']).split('(')[1][:-2]
-    print("Titre : " + str(episode_title[0]) + "\nSous-titre : " + str(episode_subtitle[0]) + "\nDate : " + str(
-        episode_date) + "\nDescription : " + str(episode_desc) + "\nAnimateurs : " + str(episode_voices))
+    #print("Titre : " + str(episode_title[0]) + "\nSous-titre : " + str(episode_subtitle[0]) + "\nDate : " + str(
+    #    episode_date) + "\nDescription : " + str(episode_desc) + "\nAnimateurs : " + str(episode_voices))
     print("Téléchargement de l'épisode en cours...")
-    download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]).replace(' ', '_'),
-                     str(episode_subtitle[0]).replace(' ', '_'))
-    print("\nTéléchargement fini. Episode suivant !")
+    #download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]).replace(' ', '_'),
+    #                 str(episode_subtitle[0]).replace(' ', '_'))
+    print("\nTéléchargement fini")
     print("Mise à jour du fichier doc")
     document_generation(output_doc, episode_title, episode_subtitle, episode_date, episode_desc, episode_voices,
                         episode_thumbnail)
-    print("Mise à jour finie\n")
+    print("Mise à jour finie. Episode suivant !\n")
 
 os.chdir(podcast_name)
 output_doc.save(podcast_name, True)

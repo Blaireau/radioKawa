@@ -24,8 +24,8 @@ import re
 
 
 # Download an episode within the correct path.
-def download_episode(url, path, name, ???):
-    full_path = path + '/' + podcast_name + '/' + name + '_-_' + ???
+def download_episode(url, path, name):
+    full_path = path + '/' + podcast_name + '/' + name + '_-_'
 
     with open(full_path + '.mp3', 'wb') as f:
         episode = requests.get(url, stream=True)
@@ -138,9 +138,9 @@ line_break = '\n'
 remove_html = re.compile('<.*?>')
 
 # Get the podcast page.
-page_to_parse = requests.get("???")
+page_to_parse = requests.get("https://www.radiokawa.com/episode/ludographie-comparee-1/")
 # Change for every podcast
-podcast_name = "???"
+podcast_name = "ludographie_comparee"
 parsed_page = BeautifulSoup(page_to_parse.text, features="html.parser")
 
 # Create the output directory if it does not already exists
@@ -181,15 +181,21 @@ for i in range(len(episode_link)):
     episode_voices = parsed_page.find("div", {"class": "episode-voices"}).contents
     episode_voices = format_voices(episode_voices)
     episode_thumbnail = str(parsed_page.find("div", {"class": "episode-thumbnail"})['style']).split('(')[1][:-2]
+    try:
+        extra_content = parsed_page.find("div", {"class": "extra-content text-copy"}).contents
+        print(extra_content[0].find("a")['href'])
+    except AttributeError:
+        print("No Extra content")
+        extra_content = ''
+
     print("Titre : " + str(episode_title[0]) + "\nSous-titre : " + str(episode_subtitle[0]) + "\nDate : " + str(
-        episode_date) + "\nDescription : " + str(episode_desc) + "\nAnimateurs : " + str(episode_voices))
+        episode_date) + "\nDescription : " + str(episode_desc) + "\nAnimateurs : " + str(episode_voices) +"\nExtra Content : " + str(extra_content))
     print("Téléchargement de l'épisode en cours...")
-    download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]).replace(' ', '_'),
-                     str(episode_subtitle[0]).replace(' ', '_'))
+    #download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]).replace(' ', '_'))
     print("\nTéléchargement fini")
     print("Mise à jour du fichier doc")
-    document_generation(output_doc, episode_title, episode_subtitle, episode_date, episode_desc, episode_voices,
-                        episode_thumbnail)
+    #document_generation(output_doc, episode_title, episode_subtitle, episode_date, episode_desc, episode_voices,
+    #                    episode_thumbnail)
     print("Mise à jour finie. Episode suivant !\n")
 
 os.chdir(podcast_name)

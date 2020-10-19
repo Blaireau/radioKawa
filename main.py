@@ -1,8 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-
-page_to_parse = requests.get("https://www.radiokawa.com/episode/late-late-boudoir-gambetta/")
-
 '''
 Les podcasts à dl :
 e-dixit : https://www.radiokawa.com/episode/e-dixit-1/
@@ -10,10 +5,24 @@ Comics outcast : https://www.radiokawa.com/culture-et-arts/comics-outcast/
 Morceaux choisis : https://www.radiokawa.com/musique/morceaux-choisis/
 Faster Than Light : https://www.radiokawa.com/jeux-video/faster-than-light/
 Les démons du Midi : https://www.radiokawa.com/jeux-video/les-demons-du-midi/
+La Dev Team : https://www.radiokawa.com/jeux-video/la-dev-team/
+Les game makers : https://www.radiokawa.com/jeux-video/the-game-makers/
+Ludographie comparée : https://www.radiokawa.com/episode/ludographie-comparee-61/
+Kaorin : https://www.radiokawa.com/episode/kaorin-134/
 '''
 
-# TODO : Vérifier que la sortie pour les différents podcasts. Faire une branche par podcast ?
+# Imports
+import requests
+from bs4 import BeautifulSoup
+from odf.opendocument import OpenDocumentText
+from odf.draw import Image, Frame
+from odf.style import Style, ParagraphProperties, TextProperties
+from odf.text import P
+from odf import teletype
+import os
+import re
 
+page_to_parse = requests.get("https://www.radiokawa.com/episode/late-late-boudoir-gambetta/")
 parsed_page = BeautifulSoup(page_to_parse.text, features="html.parser")
 
 # print(parsed_page)

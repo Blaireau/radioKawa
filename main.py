@@ -186,15 +186,21 @@ for i in range(len(episode_link)):
         print(extra_content[0].find("a")['href'])
     except AttributeError:
         print("No Extra content")
-        extra_content = ''
+        print(extra_content)
+        #extra_content = 'None'
+    except TypeError:
+        print(type(extra_content))
+        print(extra_content)
 
     print("Titre : " + str(episode_title[0]) + "\nSous-titre : " + str(episode_subtitle[0]) + "\nDate : " + str(
-        episode_date) + "\nDescription : " + str(episode_desc) + "\nAnimateurs : " + str(episode_voices) +"\nExtra Content : " + str(extra_content))
+        episode_date) + "\nDescription : " + str(episode_desc) + "\nAnimateurs : " + str(episode_voices) +
+        "\nExtra Content : " + str(extra_content))
     print("Téléchargement de l'épisode en cours...")
-    #download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]).replace(' ', '_'))
+    # download_episode(mp3_link_list[i]['href'], '.', str(episode_title[0]).replace(' ', '_'))
     print("\nTéléchargement fini")
+
     print("Mise à jour du fichier doc")
-    #document_generation(output_doc, episode_title, episode_subtitle, episode_date, episode_desc, episode_voices,
+    # document_generation(output_doc, episode_title, episode_subtitle, episode_date, episode_desc, episode_voices,
     #                    episode_thumbnail)
     print("Mise à jour finie. Episode suivant !\n")
 

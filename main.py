@@ -17,10 +17,8 @@ from tkinter import ttk
 #import libs/gen_epub
 #import libs/download_lib
 
-root = tk.Tk()
-root.geometry('300x200')
 
-
+# Defining the different events
 def action(event):
     # Obtenir l'élément sélectionné
     select = listeCombo.get()
@@ -29,17 +27,20 @@ def action(event):
     print("Vous avez sélectionné : '", select, "'")
 
 
-labelChoix = tk.Label(root, text="Veuillez faire un choix !")
+# Building the GUI
+mainWindow = tk.Tk()
+mainWindow.geometry('300x200')
+# Windows Title
+mainWindow.title("Radio Kawa Dowloader")
+# Small 
+labelChoix = tk.Label(mainWindow, text="Radio Kawa Downloader ! \n Assurez vous que le site soit toujours up !")
 labelChoix.pack()
-
-labelOut = tk.Label(root, text="Vous avez sélectionné : ")
-labelOut.pack()
 
 # 2) - créer la liste Python contenant les éléments de la liste Combobox
 listeProduits = ["Laptop", "Imprimante", "Tablette", "SmartPhone"]
 
 # 3) - Création de la Combobox via la méthode ttk.Combobox()
-listeCombo = ttk.Combobox(root, values=listeProduits)
+listeCombo = ttk.Combobox(mainWindow, values=listeProduits)
 
 # 4) - Choisir l'élément qui s'affiche par défaut
 listeCombo.current(0)
@@ -47,4 +48,4 @@ listeCombo.current(0)
 listeCombo.pack()
 listeCombo.bind("<<ComboboxSelected>>", action)
 
-root.mainloop()
+mainWindow.mainloop()

@@ -15,17 +15,25 @@ Kaorin : https://www.radiokawa.com/episode/kaorin-134/
 import tkinter as tk
 from tkinter import ttk
 #import libs/gen_epub
-#import libs/download_lib
+import libs/download_lib
 
 
 # Defining the different events
-def action(event):
+def updateShowList(event):
     # Obtenir l'élément sélectionné
-    select = listeCombo.get()
-    tmp = "Vous avez sélectionné : " + select
-    labelOut['text'] = tmp
-    print("Vous avez sélectionné : '", select, "'")
+    selectedShow = listeCatCombo.get()
+    print("Vous avez sélectionné : '", selectedShow, "'")
+    listeShow = getShowList(baseUrl, selectedShow.replace(" ","-"))
 
+
+def updateEpisodeList(event):
+    print(event)
+
+
+# Variables
+listeCat = ["le vrac", "culture et arts", "jeux video", "musique", "technologie", "la vie", "les archives"]
+listeShow = [""]
+baseUrl = "https://www.radiokawa.com/"
 
 # Building the GUI
 mainWindow = tk.Tk()
@@ -36,16 +44,22 @@ mainWindow.title("Radio Kawa Dowloader")
 labelChoix = tk.Label(mainWindow, text="Radio Kawa Downloader ! \n Assurez vous que le site soit toujours up !")
 labelChoix.pack()
 
-# 2) - créer la liste Python contenant les éléments de la liste Combobox
-listeProduits = ["Laptop", "Imprimante", "Tablette", "SmartPhone"]
+# Adding the category list
+labelDescCat = tk.Label(mainWindow, text="Quelle catégorie souhaitez vous ?")
+labelDescCat.pack()
 
-# 3) - Création de la Combobox via la méthode ttk.Combobox()
-listeCombo = ttk.Combobox(mainWindow, values=listeProduits)
+# Create the Combobox, set the first element by default, pack and bind an action
+listeCatCombo = ttk.Combobox(mainWindow, values=listeCat)
+listeCatCombo.current(0)
+listeCatCombo.pack()
+listeCatCombo.bind("<<ComboboxSelected>>", updateShowList)
 
-# 4) - Choisir l'élément qui s'affiche par défaut
-listeCombo.current(0)
+labelDescShow = tk.Label(mainWindow, text="Quelle émission souhaitez vous ?")
+labelDescShow.pack()
 
-listeCombo.pack()
-listeCombo.bind("<<ComboboxSelected>>", action)
+listeShowCombo = ttk.Combobox(mainWindow, values=listeShow)
+listeShowCombo.current(0)
+listeShowCombo.pack()
+listeShowCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
 
 mainWindow.mainloop()

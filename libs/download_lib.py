@@ -1,6 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 
+def getShowList(baseUrl, catName):
+    fullUrl = baseUrl + catName
+    catPage = requests.get(fullUrl)
+    parsedCatPage = BeautifulSoup(catPage.text, features="html.parser")
+
+
+
+
 # Download an episode within the correct path.
 def download_episode(url, path, name):
     full_path = path + '/' + podcast_name + '/' + name + '_-_'

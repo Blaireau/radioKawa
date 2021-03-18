@@ -15,19 +15,25 @@ Kaorin : https://www.radiokawa.com/episode/kaorin-134/
 import tkinter as tk
 from tkinter import ttk
 #import libs/gen_epub
-import libs/download_lib
+from libs import download_lib
+
+listeShowDict = {}
+listeEpisodeDict = {}
 
 
 # Defining the different events
 def updateShowList(event):
+    global listeShowDict
     # Obtenir l'élément sélectionné
     selectedShow = listeCatCombo.get()
     print("Vous avez sélectionné : '", selectedShow, "'")
-    listeShow = getShowList(baseUrl, selectedShow.replace(" ","-"))
+    listeShowDict = download_lib.getShowList(baseUrl, selectedShow.replace(" ", "-"))
+    listeShowCombo['values'] = list(listeShowDict.keys())
 
 
 def updateEpisodeList(event):
-    print(event)
+    print(listeShowCombo.get())
+    print(listeShowDict)
 
 
 # Variables

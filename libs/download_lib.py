@@ -12,6 +12,10 @@ def getShowList(baseUrl, catName):
     print(showDict)
     return showDict
 
+def getEpisodeList(episodesUrl):
+    episodeDict = {}
+
+
 # Download an episode within the correct path.
 def download_episode(url, path, name):
     full_path = path + '/' + podcast_name + '/' + name + '_-_'

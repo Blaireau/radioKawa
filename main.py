@@ -39,6 +39,7 @@ def updateEpisodeList(event):
 # Variables
 listeCat = ["le vrac", "culture et arts", "jeux video", "musique", "technologie", "la vie", "les archives"]
 listeShow = [""]
+listeEpisode = [""]
 baseUrl = "https://www.radiokawa.com/"
 
 # Building the GUI
@@ -67,5 +68,13 @@ listeShowCombo = ttk.Combobox(mainWindow, values=listeShow)
 listeShowCombo.current(0)
 listeShowCombo.pack()
 listeShowCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
+
+labelDescShow = tk.Label(mainWindow, text="Quelle numéro souhaitez vous ?")
+labelDescShow.pack()
+
+listeEpisodeCombo = ttk.Combobox(mainWindow, values=listeEpisode)
+listeEpisodeCombo.current(0)
+listeEpisodeCombo.pack()
+#listeEpisodeCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
 
 mainWindow.mainloop()

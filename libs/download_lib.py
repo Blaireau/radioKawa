@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+
 def getShowList(baseUrl, catName):
     showDict = {}
     fullUrl = baseUrl + catName
@@ -12,8 +13,14 @@ def getShowList(baseUrl, catName):
     print(showDict)
     return showDict
 
+
 def getEpisodeList(episodesUrl):
     episodeDict = {}
+    episodePage = requests.get(episodesUrl)
+    parsedEpisodePage = BeautifulSoup(episodePage.text, features="html.parser")
+    episodeList = parsedEpisodePage.find_all("div", {"class": "number"})
+    print(episodeList)
+
 
 
 # Download an episode within the correct path.

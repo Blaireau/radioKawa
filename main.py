@@ -32,8 +32,9 @@ def updateshowlist(event):
 
 
 def updateepisodelist(event):
-    print(listeShowCombo.get())
-    print(listeShowDict)
+    global listeEpisodeDict
+    print(listeShowDict[listeShowCombo.get()])
+    download_lib.getEpisodeList(listeShowDict[listeShowCombo.get()])
 
 
 def downloadEpisode():
@@ -79,7 +80,7 @@ labelDescShow.pack()
 listeEpisodeCombo = ttk.Combobox(mainWindow, values=listeEpisode)
 listeEpisodeCombo.current(0)
 listeEpisodeCombo.pack()
-# listeEpisodeCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
+listeEpisodeCombo.bind("<<ComboboxSelected>>", updateepisodelist)
 
 downloadButton = ttk.Button(mainWindow, text="Download !", command=downloadEpisode)
 downloadButton.pack()

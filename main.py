@@ -14,7 +14,7 @@ Kaorin : https://www.radiokawa.com/episode/kaorin-134/
 # Imports
 import tkinter as tk
 from tkinter import ttk
-#import libs/gen_epub
+# import libs/gen_epub
 from libs import download_lib
 
 listeShowDict = {}
@@ -22,7 +22,7 @@ listeEpisodeDict = {}
 
 
 # Defining the different events
-def updateShowList(event):
+def updateshowlist(event):
     global listeShowDict
     # Obtenir l'élément sélectionné
     selectedShow = listeCatCombo.get()
@@ -31,10 +31,14 @@ def updateShowList(event):
     listeShowCombo['values'] = list(listeShowDict.keys())
 
 
-def updateEpisodeList(event):
+def updateepisodelist(event):
     print(listeShowCombo.get())
     print(listeShowDict)
 
+
+def downloadEpisode():
+    print(listeCatCombo.get())
+    print(listeShowCombo.get())
 
 # Variables
 listeCat = ["le vrac", "culture et arts", "jeux video", "musique", "technologie", "la vie", "les archives"]
@@ -59,7 +63,7 @@ labelDescCat.pack()
 listeCatCombo = ttk.Combobox(mainWindow, values=listeCat)
 listeCatCombo.current(0)
 listeCatCombo.pack()
-listeCatCombo.bind("<<ComboboxSelected>>", updateShowList)
+listeCatCombo.bind("<<ComboboxSelected>>", updateshowlist)
 
 labelDescShow = tk.Label(mainWindow, text="Quelle émission souhaitez vous ?")
 labelDescShow.pack()
@@ -67,7 +71,7 @@ labelDescShow.pack()
 listeShowCombo = ttk.Combobox(mainWindow, values=listeShow)
 listeShowCombo.current(0)
 listeShowCombo.pack()
-listeShowCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
+listeShowCombo.bind("<<ComboboxSelected>>", updateepisodelist)
 
 labelDescShow = tk.Label(mainWindow, text="Quelle numéro souhaitez vous ?")
 labelDescShow.pack()
@@ -75,6 +79,9 @@ labelDescShow.pack()
 listeEpisodeCombo = ttk.Combobox(mainWindow, values=listeEpisode)
 listeEpisodeCombo.current(0)
 listeEpisodeCombo.pack()
-#listeEpisodeCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
+# listeEpisodeCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
+
+downloadButton = ttk.Button(mainWindow, text="Download !", command=downloadEpisode)
+downloadButton.pack()
 
 mainWindow.mainloop()

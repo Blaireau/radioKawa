@@ -22,7 +22,7 @@ listeEpisodeDict = {}
 
 
 # Defining the different events
-def updateshowlist(event):
+def updateShowList(event):
     global listeShowDict
     # Obtenir l'élément sélectionné
     selectedShow = listeCatCombo.get()
@@ -31,15 +31,18 @@ def updateshowlist(event):
     listeShowCombo['values'] = list(listeShowDict.keys())
 
 
-def updateepisodelist(event):
+def updateEpisodeList(event):
     global listeEpisodeDict
     print(listeShowDict[listeShowCombo.get()])
-    download_lib.getEpisodeList(listeShowDict[listeShowCombo.get()])
+    listeEpisodeDict = download_lib.getEpisodeList(listeShowDict[listeShowCombo.get()], listeCatCombo.get())
+    listeEpisodeCombo['values'] = list(listeEpisodeDict.keys())
 
 
 def downloadEpisode():
     print(listeCatCombo.get())
     print(listeShowCombo.get())
+    print(str(listeEpisodeCombo.get()) + " : " +str(listeEpisodeDict[listeEpisodeCombo.get()]))
+    print(buttonStatus.get())
 
 # Variables
 listeCat = ["le vrac", "culture et arts", "jeux video", "musique", "technologie", "la vie", "les archives"]
@@ -49,7 +52,8 @@ baseUrl = "https://www.radiokawa.com/"
 
 # Building the GUI
 mainWindow = tk.Tk()
-mainWindow.geometry('300x200')
+mainWindow.geometry('300x250')
+buttonStatus = tk.IntVar()
 # Windows Title
 mainWindow.title("Radio Kawa Dowloader")
 # Small 
@@ -64,7 +68,7 @@ labelDescCat.pack()
 listeCatCombo = ttk.Combobox(mainWindow, values=listeCat)
 listeCatCombo.current(0)
 listeCatCombo.pack()
-listeCatCombo.bind("<<ComboboxSelected>>", updateshowlist)
+listeCatCombo.bind("<<ComboboxSelected>>", updateShowList)
 
 labelDescShow = tk.Label(mainWindow, text="Quelle émission souhaitez vous ?")
 labelDescShow.pack()
@@ -72,7 +76,7 @@ labelDescShow.pack()
 listeShowCombo = ttk.Combobox(mainWindow, values=listeShow)
 listeShowCombo.current(0)
 listeShowCombo.pack()
-listeShowCombo.bind("<<ComboboxSelected>>", updateepisodelist)
+listeShowCombo.bind("<<ComboboxSelected>>", updateEpisodeList)
 
 labelDescShow = tk.Label(mainWindow, text="Quelle numéro souhaitez vous ?")
 labelDescShow.pack()
@@ -80,7 +84,9 @@ labelDescShow.pack()
 listeEpisodeCombo = ttk.Combobox(mainWindow, values=listeEpisode)
 listeEpisodeCombo.current(0)
 listeEpisodeCombo.pack()
-listeEpisodeCombo.bind("<<ComboboxSelected>>", updateepisodelist)
+
+ePubButton = ttk.Checkbutton(mainWindow, text="Generate epub ?", variable=buttonStatus)
+ePubButton.pack()
 
 downloadButton = ttk.Button(mainWindow, text="Download !", command=downloadEpisode)
 downloadButton.pack()

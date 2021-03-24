@@ -10,17 +10,28 @@ def getShowList(baseUrl, catName):
     catList = parsedCatPage.find_all("div", {"class": "show-title show-title-mobile"})
     for i in catList:
         showDict[i.string] = i.find("a")["href"]
-    print(showDict)
     return showDict
 
 
-def getEpisodeList(episodesUrl):
-    episodeDict = {}
+def getEpisodeList(episodesUrl, categorie):
+    episodeDict = {"all": "all"}
     episodePage = requests.get(episodesUrl)
     parsedEpisodePage = BeautifulSoup(episodePage.text, features="html.parser")
-    episodeList = parsedEpisodePage.find_all("div", {"class": "number"})
-    print(episodeList)
-
+    episodeNumber = parsedEpisodePage.find_all("div", {"class": "number"})
+    episodeName = parsedEpisodePage.find_all("div", {"class": "title"})
+    episodeMp3Link = parsedEpisodePage.find_all("a", {"class": "download-button"})
+    if categorie == "les archives":
+        episodeName = episodeName[2:]
+    else:
+        episodeName = episodeName[3:]
+    episodeNumber.reverse()
+    episodeName.reverse()
+    episodeMp3Link = episodeMp3Link[1:]
+    episodeMp3Link.reverse()
+    for i in range(len(episodeMp3Link)):
+        fullName = episodeNumber[i].text + " - " + episodeName[i].text.strip()
+        episodeDict[fullName] = episodeMp3Link[i]['href']
+    return episodeDict
 
 
 # Download an episode within the correct path.

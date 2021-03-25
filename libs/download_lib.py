@@ -19,7 +19,8 @@ def getEpisodeList(episodesUrl, categorie):
     parsedEpisodePage = BeautifulSoup(episodePage.text, features="html.parser")
     episodeNumber = parsedEpisodePage.find_all("div", {"class": "number"})
     episodeName = parsedEpisodePage.find_all("div", {"class": "title"})
-    episodeMp3Link = parsedEpisodePage.find_all("a", {"class": "download-button"})
+    episodeMp3Link = parsedEpisodePage.find_all("a", {"class": "episode-link"})
+    print(categorie)
     if categorie == "les archives":
         episodeName = episodeName[2:]
     else:
@@ -33,33 +34,41 @@ def getEpisodeList(episodesUrl, categorie):
         episodeDict[fullName] = episodeMp3Link[i]['href']
     return episodeDict
 
-
-# Download an episode within the correct path.
-def download_episode(url, path, name):
-    full_path = path + '/' + podcast_name + '/' + name + '_-_'
-
-    with open(full_path + '.mp3', 'wb') as f:
-        episode = requests.get(url, stream=True)
-        total_length = episode.headers.get('content-length')
-
-        if total_length is None:
-            print("No content-length header...")
-            f.write(episode.content)
-        else:
-            dl = 0
-            total_length = int(total_length)
-            for data in episode.iter_content(chunk_size=4096):
-                dl += len(data)
-                f.write(data)
-                done = int(50 * dl / total_length)
-                os.sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50 - done)))
-                os.sys.stdout.flush()
-    f.close()
+def downloadAllEpisode(categorie, show, episodeDict):
+    print(categorie)
+    print(show)
+    print(episodeDict)
 
 
-def get_image(url):
-    image = requests.get(url)
-    return image.content
+# Download one episode within the correct path.
+def downloadEpisode(categorie, show, episodeUrl):
+    print(categorie)
+    print(show)
+    print(episodeUrl)
+    # full_path = path + '/' + podcast_name + '/' + name + '_-_'
+    #
+    # with open(full_path + '.mp3', 'wb') as f:
+    #     episode = requests.get(url, stream=True)
+    #     total_length = episode.headers.get('content-length')
+    #
+    #     if total_length is None:
+    #         print("No content-length header...")
+    #         f.write(episode.content)
+    #     else:
+    #         dl = 0
+    #         total_length = int(total_length)
+    #         for data in episode.iter_content(chunk_size=4096):
+    #             dl += len(data)
+    #             f.write(data)
+    #             done = int(50 * dl / total_length)
+    #             os.sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50 - done)))
+    #             os.sys.stdout.flush()
+    # f.close()
+
+
+# def get_image(url):
+#     image = requests.get(url)
+#     return image.content
 
 #
 # # Get the podcast page.

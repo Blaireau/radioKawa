@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import os
 
 
 def getShowList(baseUrl, catName):
@@ -34,16 +35,19 @@ def getEpisodeList(episodesUrl, categorie):
         episodeDict[fullName] = episodeMp3Link[i]['href']
     return episodeDict
 
+
 def downloadAllEpisode(categorie, show, episodeDict):
     print(categorie)
     print(show)
     print(episodeDict)
+    for i in episodeDict:
+        downloadEpisode(categorie, show, episodeDict[i])
 
 
 # Download one episode within the correct path.
 def downloadEpisode(categorie, show, episodeUrl):
-    print(categorie)
-    print(show)
+    full_path = "./"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
+    print(full_path)
     print(episodeUrl)
     # full_path = path + '/' + podcast_name + '/' + name + '_-_'
     #

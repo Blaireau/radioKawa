@@ -14,8 +14,11 @@ Kaorin : https://www.radiokawa.com/episode/kaorin-134/
 # Imports
 import tkinter as tk
 from tkinter import ttk
+import requests
+from bs4 import BeautifulSoup
+import time
 # import libs/gen_epub
-from libs import download_lib
+# from libs import download_lib
 
 listeShowDict = {}
 listeEpisodeDict = {}
@@ -26,26 +29,75 @@ def updateShowList(event):
     global listeShowDict
     # Obtenir l'élément sélectionné
     selectedShow = listeCatCombo.get()
-    listeShowDict = download_lib.getShowList(baseUrl, selectedShow.replace(" ", "-"))
+    listeShowDict = getShowList(baseUrl, selectedShow.replace(" ", "-"))
     listeShowCombo['values'] = list(listeShowDict.keys())
 
 
 def updateEpisodeList(event):
     global listeEpisodeDict
     print(listeShowDict[listeShowCombo.get()])
-    listeEpisodeDict = download_lib.getEpisodeList(listeShowDict[listeShowCombo.get()], listeCatCombo.get())
+    listeEpisodeDict = getEpisodeList(listeShowDict[listeShowCombo.get()], listeCatCombo.get())
     listeEpisodeCombo['values'] = list(listeEpisodeDict.keys())
 
 
 def downloadEpisode():
-    if listeEpisodeCombo.get() == 'all':
-        download_lib.downloadAllEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict)
+    try:
+        if listeEpisodeCombo.get() == 'all':
+            getAllEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict)
+        else:
+            getEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict[listeEpisodeCombo.get()])
+    except KeyError:
+        infoBar['text'] = "Il manque une information !"
+
+
+def getShowList(baseUrl, catName):
+    showDict = {}
+    fullUrl = baseUrl + catName
+    catPage = requests.get(fullUrl)
+    parsedCatPage = BeautifulSoup(catPage.text, features="html.parser")
+    catList = parsedCatPage.find_all("div", {"class": "show-title show-title-mobile"})
+    for i in catList:
+        showDict[i.string] = i.find("a")["href"]
+    return showDict
+
+
+def getEpisodeList(episodesUrl, categorie):
+    episodeDict = {"all": "all"}
+    episodePage = requests.get(episodesUrl)
+    parsedEpisodePage = BeautifulSoup(episodePage.text, features="html.parser")
+    episodeNumber = parsedEpisodePage.find_all("div", {"class": "number"})
+    episodeName = parsedEpisodePage.find_all("div", {"class": "title"})
+    episodeMp3Link = parsedEpisodePage.find_all("a", {"class": "episode-link"})
+    if categorie == "les archives":
+        episodeName = episodeName[2:]
     else:
-        download_lib.downloadEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict[listeEpisodeCombo.get()])
-#        print(listeCatCombo.get())
-#        print(listeShowCombo.get())
-#        print(str(listeEpisodeCombo.get()) + " : " + str(listeEpisodeDict[listeEpisodeCombo.get()]))
-#        print(buttonStatus.get())
+        episodeName = episodeName[3:]
+    episodeNumber.reverse()
+    episodeName.reverse()
+    #episodeMp3Link = episodeMp3Link[1:]
+    episodeMp3Link.reverse()
+    for i in range(len(episodeMp3Link)):
+        fullName = episodeNumber[i].text + " - " + episodeName[i].text.strip()
+        episodeDict[fullName] = episodeMp3Link[i]['href']
+    return episodeDict
+
+
+def getAllEpisode(categorie, show, episodeDict):
+    episodeDict.pop('all')
+    count = 1
+    for i in episodeDict:
+        infoBar['text'] = 'Downloading episode '+ str(count) +'/'+ str(len(episodeDict))
+        getEpisode(categorie, show, episodeDict[i])
+        count+=1
+        mainWindow.update()
+        time.sleep(1)
+
+
+# Download one episode within the correct path.
+def getEpisode(categorie, show, episodeUrl):
+    full_path = "./"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
+    print(full_path)
+    print(episodeUrl)
 
 
 # Variables
@@ -56,7 +108,7 @@ baseUrl = "https://www.radiokawa.com/"
 
 # Building the GUI
 mainWindow = tk.Tk()
-mainWindow.geometry('300x225')
+mainWindow.geometry('300x300')
 buttonStatus = tk.IntVar()
 # Windows Title
 mainWindow.title("Radio Kawa Downloader")
@@ -94,5 +146,11 @@ ePubButton.pack()
 
 downloadButton = ttk.Button(mainWindow, text="Download !", command=downloadEpisode)
 downloadButton.pack()
+
+progress = ttk.Progressbar(mainWindow, length = 100, mode = 'determinate')
+progress.pack(pady=10)
+
+infoBar = tk.Label(mainWindow, text="")
+infoBar.pack()
 
 mainWindow.mainloop()

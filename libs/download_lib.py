@@ -40,6 +40,7 @@ def downloadAllEpisode(categorie, show, episodeDict):
     print(categorie)
     print(show)
     print(episodeDict)
+    super.infoBar['text'] = 'Downloading !'
     for i in episodeDict:
         downloadEpisode(categorie, show, episodeDict[i])
 

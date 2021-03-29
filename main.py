@@ -17,6 +17,7 @@ from tkinter import ttk
 import requests
 from bs4 import BeautifulSoup
 import time
+import os
 # import libs/gen_epub
 # from libs import download_lib
 
@@ -88,16 +89,24 @@ def getAllEpisode(categorie, show, episodeDict):
     for i in episodeDict:
         infoBar['text'] = 'Downloading episode '+ str(count) +'/'+ str(len(episodeDict))
         getEpisode(categorie, show, episodeDict[i])
-        count+=1
+        count += 1
         mainWindow.update()
         time.sleep(1)
+    infoBar['text'] = 'Download done !'
 
 
 # Download one episode within the correct path.
 def getEpisode(categorie, show, episodeUrl):
-    full_path = "./"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
-    print(full_path)
-    print(episodeUrl)
+    full_path = "./download/"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
+    # Check if the directory exists and create it
+    os.makedirs(full_path, exist_ok=True)
+    # Getting the page
+    pageToDl = requests.get(episodeUrl)
+    pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")
+    episodeTitle = pageToDlParsed.find("h1", {"class": "episode-title"}).contents
+    episodeSubTitle = pageToDlParsed.find("div", {"class": "episode-subtitle"}).contents
+    full_title = str(episodeTitle[0]+" - "+episodeSubTitle[0]).replace(" ", "_")
+    print(full_title)
 
 
 # Variables
@@ -147,7 +156,7 @@ ePubButton.pack()
 downloadButton = ttk.Button(mainWindow, text="Download !", command=downloadEpisode)
 downloadButton.pack()
 
-progress = ttk.Progressbar(mainWindow, length = 100, mode = 'determinate')
+progress = ttk.Progressbar(mainWindow, length=250, mode = 'determinate')
 progress.pack(pady=10)
 
 infoBar = tk.Label(mainWindow, text="")

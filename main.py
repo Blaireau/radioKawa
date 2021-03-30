@@ -87,12 +87,12 @@ def getAllEpisode(categorie, show, episodeDict):
     episodeDict.pop('all')
     count = 1
     for i in episodeDict:
-        infoBar['text'] = 'Downloading episode '+ str(count) +'/'+ str(len(episodeDict))
+        infoBar['text'] = 'Téléchargement de l\'épisode : '+ str(count) +'/'+ str(len(episodeDict))
         getEpisode(categorie, show, episodeDict[i])
         count += 1
         mainWindow.update()
         time.sleep(1)
-    infoBar['text'] = 'Download done !'
+    infoBar['text'] = 'Téléchargement fini !'
 
 
 # Download one episode within the correct path.
@@ -105,12 +105,32 @@ def getEpisode(categorie, show, episodeUrl):
     pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")
     episodeTitle = pageToDlParsed.find("h1", {"class": "episode-title"}).contents
     episodeSubTitle = pageToDlParsed.find("div", {"class": "episode-subtitle"}).contents
+    episodeMp3Link = pageToDlParsed.find("a", {"class": "button download-button radstats-download"})['href']
     full_title = str(episodeTitle[0]+" - "+episodeSubTitle[0]).replace(" ", "_")
-    print(full_title)
+    full_path = full_path + '/' + full_title + '.mp3'
+    # Download only if file doesn't exist !
+    if os.path.exists(full_path):
+        infoBar['text'] = 'Episode déjà téléchargé !'
+    else:
+        progress['value'] = 0
+        with open(full_path, 'wb') as f:
+            episode = requests.get(episodeMp3Link, stream=True)
+            total_length = episode.headers.get('content-length')
+            if total_length is None:
+                print("No content-length header...")
+                f.write(episode.content)
+            else:
+                dl = 0
+                total_length = int(total_length)
+                for data in episode.iter_content(chunk_size=4096):
+                    dl += len(data)
+                    f.write(data)
+                    progress['value'] = ((100 * dl) / total_length)
+    f.close()
 
 
 # Variables
-listeCat = ["le vrac", "culture et arts", "jeux video", "musique", "technologie", "la vie", "les archives"]
+listeCat = ["le vrac", "culture et arts", "jeux video", "musique", "technologie", "la vie", "tv cinema", "les archives"]
 listeShow = [""]
 listeEpisode = [""]
 baseUrl = "https://www.radiokawa.com/"

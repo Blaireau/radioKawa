@@ -18,8 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import os
-# import libs/gen_epub
-# from libs import download_lib
+from libs import gen_epub
 
 listeShowDict = {}
 listeEpisodeDict = {}
@@ -90,13 +89,14 @@ def getAllEpisode(categorie, show, episodeDict):
         infoBar['text'] = 'Téléchargement de l\'épisode : '+ str(count) +'/'+ str(len(episodeDict))
         getEpisode(categorie, show, episodeDict[i])
         count += 1
-        mainWindow.update()
+        mainWindow.update_idletasks()
         time.sleep(1)
-    infoBar['text'] = 'Téléchargement fini !'
+    infoBar['text'] = 'Tous les épisodes sont téléchargés !'
 
 
 # Download one episode within the correct path.
 def getEpisode(categorie, show, episodeUrl):
+    illegalChar = '<>\/:*?"|'
     full_path = "./download/"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
     # Check if the directory exists and create it
     os.makedirs(full_path, exist_ok=True)
@@ -107,6 +107,8 @@ def getEpisode(categorie, show, episodeUrl):
     episodeSubTitle = pageToDlParsed.find("div", {"class": "episode-subtitle"}).contents
     episodeMp3Link = pageToDlParsed.find("a", {"class": "button download-button radstats-download"})['href']
     full_title = str(episodeTitle[0]+" - "+episodeSubTitle[0]).replace(" ", "_")
+    for iChar in illegalChar:
+        full_title = full_title.replace(iChar, '')
     full_path = full_path + '/' + full_title + '.mp3'
     # Download only if file doesn't exist !
     if os.path.exists(full_path):
@@ -126,7 +128,10 @@ def getEpisode(categorie, show, episodeUrl):
                     dl += len(data)
                     f.write(data)
                     progress['value'] = ((100 * dl) / total_length)
-    f.close()
+                    print((str((100 * dl) / total_length)))
+                    mainWindow.update()
+        f.close()
+    infoBar['text'] = 'Téléchargement fini !'
 
 
 # Variables
@@ -176,7 +181,7 @@ ePubButton.pack()
 downloadButton = ttk.Button(mainWindow, text="Download !", command=downloadEpisode)
 downloadButton.pack()
 
-progress = ttk.Progressbar(mainWindow, length=250, mode = 'determinate')
+progress = ttk.Progressbar(mainWindow, length=250, mode='determinate', maximum=100)
 progress.pack(pady=10)
 
 infoBar = tk.Label(mainWindow, text="")

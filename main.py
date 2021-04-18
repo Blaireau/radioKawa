@@ -18,13 +18,29 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import os
-#import pypub
+import pypub
 
 listeShowDict = {}
 listeEpisodeDict = {}
+epubOut = pypub.Epub()
 
-def generateEpub():
-    print('Cool Stuff in the ePub !')
+def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
+    print(path)
+    print(show)
+    print(type(pageToDlParsed))
+    chapterName = episodeTitle + ' - ' + episodeSubTitle
+    episodeDesc = pageToDlParsed.find("div", {"class": "episode-description"})
+    episodeExtraContent = pageToDlParsed.find(("div", {"class": "episode-extra-content"}))
+    print(chapterName)
+    print(episodeDesc)
+    print(episodeExtraContent)
+    full_content = str(episodeDesc + episodeExtraContent)
+
+    chapter = pypub.create_chapter_from_string(full_content, title=chapterName)
+    epubOut.add_chapter(chapter)
+ 
+    epubOut.create_epub(path, show)
+
 
 # Defining the different events
 def updateShowList(event):
@@ -76,7 +92,6 @@ def getEpisodeList(episodesUrl, categorie):
         episodeName = episodeName[3:]
     episodeNumber.reverse()
     episodeName.reverse()
-    #episodeMp3Link = episodeMp3Link[1:]
     episodeMp3Link.reverse()
     for i in range(len(episodeMp3Link)):
         fullName = episodeNumber[i].text + " - " + episodeName[i].text.strip()
@@ -99,10 +114,9 @@ def getAllEpisode(categorie, show, episodeDict, epubGen):
 # Download one episode within the correct path.
 def getEpisode(categorie, show, episodeUrl, epubGen):
     illegalChar = '<>\/:*?"|'
-    full_path = "./download/"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
+    temp_path = "./download/"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
     # Check if the directory exists and create it
-    os.makedirs(full_path, exist_ok=True)
-    print(epubGen)
+    os.makedirs(temp_path, exist_ok=True)
     infoBar['text'] = 'Téléchargement en cours'
     # Getting the page
     pageToDl = requests.get(episodeUrl)
@@ -113,10 +127,12 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     full_title = str(episodeTitle[0]+" - "+episodeSubTitle[0]).replace(" ", "_")
     for iChar in illegalChar:
         full_title = full_title.replace(iChar, '')
-    full_path = full_path + '/' + full_title + '.mp3'
+    full_path = temp_path + '/' + full_title + '.mp3'
     # Download only if file doesn't exist !
     if os.path.exists(full_path):
         infoBar['text'] = 'Episode déjà téléchargé !'
+        if epubGen:
+            generateEpub(temp_path, show, pageToDlParsed)
         return
     else:
         progress['value'] = 0
@@ -137,7 +153,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
                     mainWindow.update()
         f.close()
         if epubGen:
-            generateEpub()
+            generateEpub(temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
 
     infoBar['text'] = 'Téléchargement fini !'
 

@@ -18,11 +18,13 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import os
-from libs import gen_epub
+#import pypub
 
 listeShowDict = {}
 listeEpisodeDict = {}
 
+def generateEpub():
+    print('Cool Stuff in the ePub !')
 
 # Defining the different events
 def updateShowList(event):
@@ -43,9 +45,9 @@ def updateEpisodeList(event):
 def downloadEpisode():
     try:
         if listeEpisodeCombo.get() == 'all':
-            getAllEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict)
+            getAllEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict, buttonStatus.get())
         else:
-            getEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict[listeEpisodeCombo.get()])
+            getEpisode(listeCatCombo.get(), listeShowCombo.get(), listeEpisodeDict[listeEpisodeCombo.get()], buttonStatus.get())
     except KeyError:
         infoBar['text'] = "Il manque une information !"
 
@@ -82,12 +84,12 @@ def getEpisodeList(episodesUrl, categorie):
     return episodeDict
 
 
-def getAllEpisode(categorie, show, episodeDict):
+def getAllEpisode(categorie, show, episodeDict, epubGen):
     episodeDict.pop('all')
     count = 1
     for i in episodeDict:
         infoBar['text'] = 'Téléchargement de l\'épisode : '+ str(count) +'/'+ str(len(episodeDict))
-        getEpisode(categorie, show, episodeDict[i])
+        getEpisode(categorie, show, episodeDict[i], epubGen)
         count += 1
         mainWindow.update_idletasks()
         time.sleep(1)
@@ -95,11 +97,13 @@ def getAllEpisode(categorie, show, episodeDict):
 
 
 # Download one episode within the correct path.
-def getEpisode(categorie, show, episodeUrl):
+def getEpisode(categorie, show, episodeUrl, epubGen):
     illegalChar = '<>\/:*?"|'
     full_path = "./download/"+ categorie.replace(" ","_") + "/" + show.replace(" ","_")
     # Check if the directory exists and create it
     os.makedirs(full_path, exist_ok=True)
+    print(epubGen)
+    infoBar['text'] = 'Téléchargement en cours'
     # Getting the page
     pageToDl = requests.get(episodeUrl)
     pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")
@@ -113,6 +117,7 @@ def getEpisode(categorie, show, episodeUrl):
     # Download only if file doesn't exist !
     if os.path.exists(full_path):
         infoBar['text'] = 'Episode déjà téléchargé !'
+        return
     else:
         progress['value'] = 0
         with open(full_path, 'wb') as f:
@@ -128,9 +133,12 @@ def getEpisode(categorie, show, episodeUrl):
                     dl += len(data)
                     f.write(data)
                     progress['value'] = ((100 * dl) / total_length)
-                    print((str((100 * dl) / total_length)))
+                    #print((str((100 * dl) / total_length)))
                     mainWindow.update()
         f.close()
+        if epubGen:
+            generateEpub()
+
     infoBar['text'] = 'Téléchargement fini !'
 
 
@@ -142,7 +150,7 @@ baseUrl = "https://www.radiokawa.com/"
 
 # Building the GUI
 mainWindow = tk.Tk()
-mainWindow.geometry('300x300')
+mainWindow.geometry('300x285')
 buttonStatus = tk.IntVar()
 # Windows Title
 mainWindow.title("Radio Kawa Downloader")

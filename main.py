@@ -18,11 +18,10 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import os
-import pypub
+import ebooklib
 
 listeShowDict = {}
 listeEpisodeDict = {}
-epubOut = pypub.Epub()
 
 def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(path)
@@ -35,11 +34,6 @@ def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(episodeDesc)
     print(episodeExtraContent)
     full_content = str(episodeDesc + episodeExtraContent)
-
-    chapter = pypub.create_chapter_from_string(full_content, title=chapterName)
-    epubOut.add_chapter(chapter)
- 
-    epubOut.create_epub(path, show)
 
 
 # Defining the different events

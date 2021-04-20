@@ -126,7 +126,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     if os.path.exists(full_path):
         infoBar['text'] = 'Episode déjà téléchargé !'
         if epubGen:
-            generateEpub(temp_path, show, pageToDlParsed)
+            generateEpub(temp_path, show, pageToDlParsed, episodeSubTitle, pageToDlParsed)
         return
     else:
         progress['value'] = 0

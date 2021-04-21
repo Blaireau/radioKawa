@@ -23,6 +23,7 @@ import ebooklib
 listeShowDict = {}
 listeEpisodeDict = {}
 
+
 def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(path)
     print(show)

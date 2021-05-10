@@ -18,7 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import os
-import ebooklib
+from ebooklib import epub
 
 listeShowDict = {}
 listeEpisodeDict = {}

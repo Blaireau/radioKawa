@@ -27,14 +27,13 @@ listeEpisodeDict = {}
 def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(path)
     print(show)
-    print(type(pageToDlParsed))
-    chapterName = episodeTitle + ' - ' + episodeSubTitle
+    chapterName = ' '.join(episodeTitle) + ' - ' + ' '.join(episodeSubTitle)
     episodeDesc = pageToDlParsed.find("div", {"class": "episode-description"})
     episodeExtraContent = pageToDlParsed.find(("div", {"class": "episode-extra-content"}))
     print(chapterName)
     print(episodeDesc)
-    print(episodeExtraContent)
-    full_content = str(episodeDesc + episodeExtraContent)
+    #print(episodeExtraContent)
+    #full_content = str(episodeDesc + episodeExtraContent)
 
 
 # Defining the different events
@@ -127,7 +126,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     if os.path.exists(full_path):
         infoBar['text'] = 'Episode déjà téléchargé !'
         if epubGen:
-            generateEpub(temp_path, show, pageToDlParsed, episodeSubTitle, pageToDlParsed)
+            generateEpub(temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
         return
     else:
         progress['value'] = 0

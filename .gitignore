@@ -4,3 +4,5 @@
 .idea/
 *.pyc
 *.mp3
+.vs/
+envdev/

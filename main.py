@@ -65,7 +65,7 @@ def downloadEpisode():
 def getShowList(baseUrl, catName):
     showDict = {}
     fullUrl = baseUrl + catName
-    catPage = requests.get(fullUrl)
+    catPage = requests.get(fullUrl, verify=False)
     parsedCatPage = BeautifulSoup(catPage.text, features="html.parser")
     catList = parsedCatPage.find_all("div", {"class": "show-title show-title-mobile"})
     for i in catList:
@@ -75,7 +75,7 @@ def getShowList(baseUrl, catName):
 
 def getEpisodeList(episodesUrl, categorie):
     episodeDict = {"all": "all"}
-    episodePage = requests.get(episodesUrl)
+    episodePage = requests.get(episodesUrl, verify=False)
     parsedEpisodePage = BeautifulSoup(episodePage.text, features="html.parser")
     episodeNumber = parsedEpisodePage.find_all("div", {"class": "number"})
     episodeName = parsedEpisodePage.find_all("div", {"class": "title"})
@@ -113,7 +113,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     os.makedirs(temp_path, exist_ok=True)
     infoBar['text'] = 'Téléchargement en cours'
     # Getting the page
-    pageToDl = requests.get(episodeUrl)
+    pageToDl = requests.get(episodeUrl, verify=False)
     pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")
     episodeTitle = pageToDlParsed.find("h1", {"class": "episode-title"}).contents
     episodeSubTitle = pageToDlParsed.find("div", {"class": "episode-subtitle"}).contents
@@ -131,7 +131,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     else:
         progress['value'] = 0
         with open(full_path, 'wb') as f:
-            episode = requests.get(episodeMp3Link, stream=True)
+            episode = requests.get(episodeMp3Link, stream=True, verify=False)
             total_length = episode.headers.get('content-length')
             if total_length is None:
                 print("No content-length header...")

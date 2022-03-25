@@ -23,6 +23,14 @@ from ebooklib import epub
 listeShowDict = {}
 listeEpisodeDict = {}
 
+def createEpub(show, epub_path):
+    print("Create epub")
+    # Creating the path
+    epub_path = epub_path + '/' + show + '.epub'
+    # Checking if the epub file exists
+    if os.path.exists(epub_path):
+
+    return
 
 def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(path)
@@ -112,6 +120,9 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     # Check if the directory exists and create it
     os.makedirs(temp_path, exist_ok=True)
     infoBar['text'] = 'Téléchargement en cours'
+    # Check if we want the ePub file, and if it exists
+    if epubGen:
+        createEpub(show,temp_path)
     # Getting the page
     pageToDl = requests.get(episodeUrl, verify=False)
     pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")

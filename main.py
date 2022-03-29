@@ -27,10 +27,15 @@ def createEpub(show, epub_path):
     print("Create epub")
     # Creating the path
     epub_path = epub_path + '/' + show + '.epub'
+    print(epub_path)
     # Checking if the epub file exists
     if os.path.exists(epub_path):
-
-    return
+        # If it exists, just return a file pointer to work with it
+        print('I already exist !')
+    else:
+        # If not create it !
+        print('Time to create a file !')
+    return 0
 
 def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(path)

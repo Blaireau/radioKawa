@@ -30,11 +30,18 @@ def createEpub(show, epub_path):
     print(epub_path)
     # Checking if the epub file exists
     if os.path.exists(epub_path):
-        # If it exists, just return a file pointer to work with it
-        print('I already exist !')
+        # If it exists, just return it
+        return epub.read_epub(epub_path)
     else:
         # If not create it !
-        print('Time to create a file !')
+        pod_ebook = epub.EpubBook()
+        # Add minimal metadata
+        pod_ebook.set_identifier()
+        pod_ebook.set_title()
+        pod_ebook.set_language()
+
+        return pod_ebook
+
     return 0
 
 def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):

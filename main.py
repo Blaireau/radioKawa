@@ -24,22 +24,25 @@ listeShowDict = {}
 listeEpisodeDict = {}
 
 def createEpub(show, epub_path):
-    print("Create epub")
     # Creating the path
     epub_path = epub_path + '/' + show + '.epub'
     print(epub_path)
     # Checking if the epub file exists
     if os.path.exists(epub_path):
         # If it exists, just return it
-        return epub.read_epub(epub_path)
+        print('Reading ePub')
+        pod_ebook = epub.read_epub(epub_path)
+        print(pod_ebook)
+        return pod_ebook
     else:
+        print('Creating ePub')
         # If not create it !
         pod_ebook = epub.EpubBook()
         # Add minimal metadata
-        pod_ebook.set_identifier()
-        pod_ebook.set_title()
-        pod_ebook.set_language()
-
+        #pod_ebook.set_identifier()
+        pod_ebook.set_title(show)
+        pod_ebook.set_language('fr')
+        epub.write_epub(epub_path, pod_ebook)
         return pod_ebook
 
     return 0
@@ -134,7 +137,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     infoBar['text'] = 'Téléchargement en cours'
     # Check if we want the ePub file, and if it exists
     if epubGen:
-        createEpub(show,temp_path)
+        pod_ebook = createEpub(show,temp_path)
     # Getting the page
     pageToDl = requests.get(episodeUrl, verify=False)
     pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")

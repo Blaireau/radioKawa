@@ -31,8 +31,8 @@ def createEpub(show, epub_path):
     if os.path.exists(epub_path):
         # If it exists, just return it
         print('Reading ePub')
-        pod_ebook = epub.read_epub(epub_path)
-        print(pod_ebook)
+        #pod_ebook = epub.read_epub(epub_path)
+        epub.read_epub(epub_path)
         return pod_ebook
     else:
         print('Creating ePub')
@@ -47,9 +47,9 @@ def createEpub(show, epub_path):
 
     return 0
 
-def generateEpub(path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
-    print(path)
+def addEpubPage(podEbook, path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
     print(show)
+    print(path)
     chapterName = ' '.join(episodeTitle) + ' - ' + ' '.join(episodeSubTitle)
     episodeDesc = pageToDlParsed.find("div", {"class": "episode-description"})
     episodeExtraContent = pageToDlParsed.find(("div", {"class": "episode-extra-content"}))
@@ -152,7 +152,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     if os.path.exists(full_path):
         infoBar['text'] = 'Episode déjà téléchargé !'
         if epubGen:
-            generateEpub(temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
+            addEpubPage(podEbook, temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
         return
     else:
         progress['value'] = 0
@@ -173,7 +173,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
                     mainWindow.update()
         f.close()
         if epubGen:
-            generateEpub(temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
+            addEpubPage(podEbook, temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
 
     infoBar['text'] = 'Téléchargement fini !'
 

@@ -12,8 +12,10 @@ Kaorin : https://www.radiokawa.com/episode/kaorin-134/
 '''
 
 # Imports
+from fileinput import filename
 import tkinter as tk
 from tkinter import ttk
+from turtle import title
 import requests
 from bs4 import BeautifulSoup
 import time
@@ -42,20 +44,40 @@ def createEpub(show, epub_path):
         #pod_ebook.set_identifier()
         pod_ebook.set_title(show)
         pod_ebook.set_language('fr')
-        epub.write_epub(epub_path, pod_ebook)
+        #epub.write_epub(epub_path, pod_ebook)
         return pod_ebook
 
     return 0
 
-def addEpubPage(podEbook, path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
+def addEpubPage(pod_ebook, path, show, episodeTitle, episodeSubTitle, pageToDlParsed):
+    print('Adding epub Page')
     print(show)
-    print(path)
+
+    # Preparing data
+    epub_path = path + '/' + show + '.epub'
+    # Extracting data
     chapterName = ' '.join(episodeTitle) + ' - ' + ' '.join(episodeSubTitle)
     episodeDesc = pageToDlParsed.find("div", {"class": "episode-description"})
     episodeExtraContent = pageToDlParsed.find(("div", {"class": "episode-extra-content"}))
-    print(chapterName)
-    print(episodeDesc)
-    #print(episodeExtraContent)
+    
+    print("ChapterName : "+ str(chapterName))
+    print("Episode Desc : "+ str(episodeDesc))
+    #print("Episode ExtraContent : "+str(episodeExtraContent))
+    # Preparing data to be added to the ebook
+    chapter = epub.EpubHtml(title=chapterName,file_name=chapterName+'.xhtml',lang='en')
+    print("Chapter type : "+ str(type(chapter)))
+    print("Chapter Content : "+str(chapter))
+    #chapter.set_content(str(episodeDesc))
+    chapter.set_content(u' '+str(episodeDesc))
+    print("Chapter type : "+ str(type(chapter)))
+    print("Chapter Content : "+str(chapter))
+    # Adding the data
+    pod_ebook.add_item(chapter)
+    pod_ebook.add_item(epub.EpubNcx())
+    pod_ebook.add_item(epub.EpubNav())
+    print(pod_ebook)
+    print(epub_path)
+    epub.write_epub(epub_path, pod_ebook)
     #full_content = str(episodeDesc + episodeExtraContent)
 
 
@@ -138,6 +160,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     # Check if we want the ePub file, and if it exists
     if epubGen:
         pod_ebook = createEpub(show,temp_path)
+        print(pod_ebook)
     # Getting the page
     pageToDl = requests.get(episodeUrl, verify=False)
     pageToDlParsed = BeautifulSoup(pageToDl.text, features="html.parser")
@@ -152,7 +175,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
     if os.path.exists(full_path):
         infoBar['text'] = 'Episode déjà téléchargé !'
         if epubGen:
-            addEpubPage(podEbook, temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
+            addEpubPage(pod_ebook, temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
         return
     else:
         progress['value'] = 0
@@ -173,7 +196,7 @@ def getEpisode(categorie, show, episodeUrl, epubGen):
                     mainWindow.update()
         f.close()
         if epubGen:
-            addEpubPage(podEbook, temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
+            addEpubPage(pod_ebook, temp_path, show, episodeTitle, episodeSubTitle, pageToDlParsed)
 
     infoBar['text'] = 'Téléchargement fini !'
 

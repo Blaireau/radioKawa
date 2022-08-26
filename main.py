@@ -60,17 +60,9 @@ def addEpubPage(pod_ebook, path, show, episodeTitle, episodeSubTitle, pageToDlPa
     episodeDesc = pageToDlParsed.find("div", {"class": "episode-description"})
     episodeExtraContent = pageToDlParsed.find(("div", {"class": "episode-extra-content"}))
     
-    print("ChapterName : "+ str(chapterName))
-    print("Episode Desc : "+ str(episodeDesc))
-    #print("Episode ExtraContent : "+str(episodeExtraContent))
     # Preparing data to be added to the ebook
     chapter = epub.EpubHtml(title=chapterName,file_name=chapterName+'.xhtml',lang='en')
-    print("Chapter type : "+ str(type(chapter)))
-    print("Chapter Content : "+str(chapter))
-    #chapter.set_content(str(episodeDesc))
     chapter.set_content(u' '+str(episodeDesc))
-    print("Chapter type : "+ str(type(chapter)))
-    print("Chapter Content : "+str(chapter))
     # Adding the data
     pod_ebook.add_item(chapter)
     pod_ebook.add_item(epub.EpubNcx())
